@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const app = express();
+const passport=require('passport');
+require('./middleware/passport')(passport);
 const dotenv = require("dotenv");
 dotenv.config();
 const bodyparser = require('body-parser');
@@ -9,6 +11,10 @@ app.use(express.static(__dirname));
 const router=require('./routes/users');
 const port = process.env.PORT;
 
+var session = require("express-session");
+app.use(session({ secret: "cats" }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 app.use((req, res, next) => {

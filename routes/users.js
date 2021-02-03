@@ -3,7 +3,7 @@ const router=express.Router();
 const userController=require('./../controllers/userController')
 
 
-router.get('/login',userController.loginUser);
-router.get('/signup',userController.signUpUser);
+router.post('/login',userController.loginUser);
+router.post('/signup',userController.signUpUser);
 
 module.exports=router;
