@@ -4,10 +4,7 @@ const app = express();
 const port = process.env.PORT;
 const dotenv = require("dotenv");
 dotenv.config();
-
-
 const bodyparser = require('body-parser');
-
 app.use(bodyparser.json());
 app.use(express.static(__dirname));
 
