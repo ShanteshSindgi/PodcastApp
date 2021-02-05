@@ -1,25 +1,18 @@
 const mongoose=require('mongoose');
 mongoose.set('useFindAndModify', false);
-const UserSchema=new mongoose.Schema({
-    username:{
+const TagsSchema=new mongoose.Schema({
+    tagName:{
         type:String,
         required:true
     },
-    email:{
+    tagDescription:{
         type:String,
         required:true
     },
-    password:{
-        type:String,
-        required:true
-    },
-    status:{
-        type:Boolean,
-        default:true
-    },
+    
     date:{
         type:Date,
         default:Date.now()
     }
 });
-module.exports=mongoose.model('Users',UserSchema);
+module.exports=mongoose.model('Tags',TagsSchema);

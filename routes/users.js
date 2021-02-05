@@ -53,6 +53,13 @@ router.get('/userDetails',userController.fetchUsers);
 
 
 //User Update
-router.put('/updateUser/:userid',userController.updateUser)
+router.put('/updateUser/:userid',userController.updateUser);
+
+
+router.get('/deleteUser/:userid',userController.deleteUser);
+
+
+router.get('/userStatus/:userid',userController.userStatus);
+
 
 module.exports=router;

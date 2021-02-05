@@ -6,7 +6,14 @@ dotenv.config();
 const bodyparser = require('body-parser');
 app.use(bodyparser.json());
 app.use(express.static(__dirname));
-const router=require('./routes/users');
+
+
+const userroute=require('./routes/users');
+const notificationroute=require('./routes/notifications');
+const tagroute=require('./routes/tags');
+
+
+
 const port = process.env.PORT;
 const cookieSession = require('cookie-session')
 const passport = require('passport');
@@ -34,7 +41,14 @@ app.use((req, res, next) => {
     );
     next();
 });
-app.use('/users',router);
+
+
+//Routes
+app.use('/users',userroute);
+app.use('/notifications',notificationroute);
+app.use('/tags',tagroute);
+
+
 app.use("/",(req,res)=>{
     res.json("WELCOME TO SERVER")
 })

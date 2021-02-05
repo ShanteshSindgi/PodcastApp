@@ -1,25 +1,18 @@
 const mongoose=require('mongoose');
 mongoose.set('useFindAndModify', false);
-const UserSchema=new mongoose.Schema({
-    username:{
+const NotificationSchema=new mongoose.Schema({
+    notificationName:{
         type:String,
         required:true
     },
-    email:{
+    notificationDescription:{
         type:String,
         required:true
     },
-    password:{
-        type:String,
-        required:true
-    },
-    status:{
-        type:Boolean,
-        default:true
-    },
+    
     date:{
         type:Date,
         default:Date.now()
     }
 });
-module.exports=mongoose.model('Users',UserSchema);
+module.exports=mongoose.model('Notifications',NotificationSchema);

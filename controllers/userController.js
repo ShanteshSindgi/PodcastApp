@@ -136,8 +136,7 @@ exports.passwordReset = (req, res) => {
     console.log("token", tokens);
     jwt.verify(tokens, process.env.JWT_KEY, (err) => {
         console.log(process.env.JWT_KEY);
-        if (err)
-        {
+        if (err) {
             console.log(err);
             return res.status(403).json({
                 "message": "Token expire"
@@ -157,69 +156,130 @@ exports.passwordresetSuccessfull = (req, res) => {
 
 exports.fetchUsers = async (req, res) => {
 
-  console.log(req.query);
-  const pagesize=+req.query.pagesize;
-  const currentpage=+req.query.page;
-  const UserQuery= User.find();
-  if(pagesize && currentpage)
-  {
-      UserQuery
-      .skip(pagesize*(currentpage-1))
-      .limit(pagesize)
+    console.log(req.query);
+    const pagesize = +req.query.pagesize;
+    const currentpage = +req.query.page;
+    const UserQuery = User.find();
+    if (pagesize && currentpage) {
+        UserQuery
+            .skip(pagesize * (currentpage - 1))
+            .limit(pagesize)
 
-  }
-  UserQuery.find().then(
-    (data) => {
-      res.status(200).json({
-        message: "Users  data received successfully",
-        userList: data
-      });
     }
-  ).catch(
-      (err)=>{
-          console.log(err);
+    UserQuery.find().then(
+        (data) => {
+            res.status(200).json({
+                message: "Users  data received successfully",
+                userList: data
+            });
+        }
+    ).catch(
+        (err) => {
+            console.log(err);
 
-          res.status(404).json({
-            message: "No Data Found",
-            posts: data
-          });
-          
-      }
-  )
+            res.status(404).json({
+                message: "No Data Found",
+                posts: data
+            });
+
+        }
+    )
 
 }
 
-exports.updateUser=async(req,res)=>{
+exports.updateUser = async (req, res) => {
 
-    const userid=await req.params.userid;
-    const username=await req.body.username;
-    const email=await req.body.email;
-    console.log("body",req.body);
-    console.log(userid,username,email);
+    const userid = await req.params.userid;
+    const username = await req.body.username;
+    const email = await req.body.email;
+    console.log("body", req.body);
+    console.log(userid, username, email);
 
-    if(!userid || !username || !email)
-    {
+    if (!userid || !username || !email) {
         res.status(404).json({
-            message:"User Not Found",
+            message: "User Not Found",
+        })
+    } else {
+
+        User.findByIdAndUpdate({
+            _id: userid
+        }, {
+            email: email,
+            username: username
+        }, (err, result) => {
+            if (err) {
+                res.status(204).json({
+                    "message": "User Not Updated"
+                })
+                console.log(err);
+            } else {
+                res.status(200).json({
+                    "message": "User Updated Successfully"
+                })
+            }
         })
     }
-    else{
 
-        User.findByIdAndUpdate(
-            {_id:userid},{email:email,username:username},(err,result)=>{
-                if(err){
-                    res.status(204).json({
-                        "message":"User Not Updated"
-                    })
-                    console.log(err);
-                }
-                else{
-                    res.status(200).json({
-                        "message":"User Updated Successfully"
-                    })
-                }
+}
+
+
+
+exports.deleteUser = (req, res) => {
+    const userid = req.params.userid;
+
+    if (!userid) {
+        res.status(404).json({
+            "message": "User not found"
+        });
+    } else {
+        console.log("user", userid);
+        User.deleteOne({
+            _id: userid
+        }, (err, data) => {
+
+            if (err) {
+                console.log("er", err)
+                res.status(204).json({
+                    "message": "User deletion failed"
+                })
+            } else {
+                res.status(200).json({
+                    "message": "User deleted Successfully"
+                })
             }
-        )
+
+        })
+
+    }
+}
+
+
+exports.userStatus = (req, res) => {
+    console.log(req.query.status);
+    const userid = req.params.userid;
+    const status = (req.query.status === 'true');
+
+    if (!userid) {
+        res.status(404).json({
+            "message": "User not found"
+        });
+    } else {
+        User.findByIdAndUpdate({
+            _id: userid
+        }, {
+            status: !status
+        }, (err, result) => {
+            if (err) {
+                res.status(204).json({
+                    "message": "User Status not Updated"
+                })
+                console.log(err);
+            } else {
+                res.status(200).json({
+                    "message": "User Status Updated Successfully"
+                })
+            }
+        })
     }
 
 }
