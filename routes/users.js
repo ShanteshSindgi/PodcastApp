@@ -53,6 +53,6 @@ router.get('/userDetails',userController.fetchUsers);
 
 
 //User Update
-router.get('/updateUser',userController.updateUser)
+router.put('/updateUser/:userid',userController.updateUser)
 
 module.exports=router;

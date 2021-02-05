@@ -188,3 +188,38 @@ exports.fetchUsers = async (req, res) => {
   )
 
 }
+
+exports.updateUser=async(req,res)=>{
+
+    const userid=await req.params.userid;
+    const username=await req.body.username;
+    const email=await req.body.email;
+    console.log("body",req.body);
+    console.log(userid,username,email);
+
+    if(!userid || !username || !email)
+    {
+        res.status(404).json({
+            message:"User Not Found",
+        })
+    }
+    else{
+
+        User.findByIdAndUpdate(
+            {_id:userid},{email:email,username:username},(err,result)=>{
+                if(err){
+                    res.status(204).json({
+                        "message":"User Not Updated"
+                    })
+                    console.log(err);
+                }
+                else{
+                    res.status(200).json({
+                        "message":"User Updated Successfully"
+                    })
+                }
+            }
+        )
+    }
+
+}
