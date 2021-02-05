@@ -1,7 +1,9 @@
 const User = require('./../models/UserModel');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const jwt=require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
+var nodemailer = require('nodemailer');
+
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -60,7 +62,7 @@ exports.signUpUser = (req, res, next) => {
             next();
         } else {
             const newUser = new User({
-                name: req.body.username,
+                username: req.body.username,
                 email: req.body.email,
                 password: req.body.password
             });
@@ -77,4 +79,112 @@ exports.signUpUser = (req, res, next) => {
             })
         }
     })
+}
+
+exports.forgetPassword = async (req, res) => {
+
+    console.log("dta", req.body);
+    const email = req.body.email;
+    if (!email) {
+        res.json("Email Not Found");
+    } else {
+        const token = await jwt.sign({
+                email: email,
+            },
+
+            process.env.JWT_KEY, {
+                // expiresIn: "1h",
+            }
+
+        );
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'bookmymovie30@gmail.com',
+                pass: 'bookmymovie7'
+            }
+        });
+
+        var mailOptions = {
+            from: 'bookmymovie30@gmail.com',
+            to: email,
+            subject: 'Password Reset',
+            text: "Go to this Link http://localhost:3200/users/passwordreset/?token=" + token
+        };
+
+        transporter.sendMail(mailOptions, async function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({
+                    "token": token
+                });
+
+            }
+        });
+    }
+
+}
+
+exports.passwordReset = (req, res) => {
+
+    console.log(req.body);
+    console.log(req.query.token);
+    const tokens = req.query.token;
+    console.log("token", tokens);
+    jwt.verify(tokens, process.env.JWT_KEY, (err) => {
+        console.log(process.env.JWT_KEY);
+        if (err)
+        {
+            console.log(err);
+            return res.status(403).json({
+                "message": "Token expire"
+            })
+        } else {
+            res.send(
+                '<h1>Password Reset <h1> <input '
+            )
+        }
+    })
+
+}
+exports.passwordresetSuccessfull = (req, res) => {
+    console.log(req.query.password)
+    res.json("success");
+}
+
+exports.fetchUsers = async (req, res) => {
+
+  console.log(req.query);
+  const pagesize=+req.query.pagesize;
+  const currentpage=+req.query.page;
+  const UserQuery= User.find();
+  if(pagesize && currentpage)
+  {
+      UserQuery
+      .skip(pagesize*(currentpage-1))
+      .limit(pagesize)
+
+  }
+  UserQuery.find().then(
+    (data) => {
+      res.status(200).json({
+        message: "Users  data received successfully",
+        userList: data
+      });
+    }
+  ).catch(
+      (err)=>{
+          console.log(err);
+
+          res.status(404).json({
+            message: "No Data Found",
+            posts: data
+          });
+          
+      }
+  )
+
 }

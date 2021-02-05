@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const app = express();
-const passport=require('passport');
-require('./middleware/passport')(passport);
 const dotenv = require("dotenv");
 dotenv.config();
 const bodyparser = require('body-parser');
@@ -10,9 +8,15 @@ app.use(bodyparser.json());
 app.use(express.static(__dirname));
 const router=require('./routes/users');
 const port = process.env.PORT;
+const cookieSession = require('cookie-session')
+const passport = require('passport');
 
-var session = require("express-session");
-app.use(session({ secret: "cats" }));
+//require('./../Nodemon.json').config();
+app.use(cookieSession({
+  name: 'tuto-session',
+  keys: ['key1', 'key2']
+}))
+
 app.use(passport.initialize());
 app.use(passport.session());
 
