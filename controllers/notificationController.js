@@ -37,7 +37,7 @@ exports.addNotification = async (req, res) => {
 }
 
 
-exports.fetchNotifications = (req, res) => {
+exports.fetchNotifications = async (req, res) => {
 
     const pagesize = +req.query.pagesize;
     const currentpage = +req.query.page;
@@ -48,30 +48,35 @@ exports.fetchNotifications = (req, res) => {
             .limit(pagesize)
 
     }
+    const totallength=await  Notifications.count({}, function( err, count){
+        console.log( "Number of users:", count );
+    });
+
     NotificationQuery.find().then(
         (data) => {
             if (data.length <= 0) {
                 res.status(404).json({
                     message: "No Notifications Available",
-                    data:data
-                    
+                    data: data,
+
                 });
 
+            } else {
+                res.status(200).json({
+                    message: "Notifications fetched successfully",
+                    data: data,
+                    totallength:totallength
+
+                });
             }
-            else{
-            res.status(200).json({
-                message: "Notifications fetched successfully",
-                data: data
-            });
-        }
         }
     ).catch(
         (err) => {
 
             res.status(404).json({
                 message: "No Data Found",
-                data:data
-                
+                data: data
+
             });
 
         }
