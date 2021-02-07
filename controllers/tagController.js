@@ -23,13 +23,22 @@ exports.addTag = async (req, res) => {
                 res.status(200).json({
                     "message": "tag Added Successfully"
                 });
+            },
+            (err)=>{
+                if(err)
+                res.status(204).json({
+                    "message": "Duplicate Tag Found"
+                });
+
             }
         ).catch(
             (err) => {
-                console.log(err);
+                if(err)
+                {
                 res.status(204).json({
-                    "message": "tag not Added"
+                    "message": "Tag not added"
                 })
+            }
             }
         )
     }

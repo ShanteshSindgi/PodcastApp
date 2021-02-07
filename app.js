@@ -15,10 +15,16 @@ app.use(
 app.use(bodyparser.json());
 app.use(express.static(__dirname));
 
-const userroute = require("./routes/users");
-const notificationroute = require("./routes/notifications");
-const tagroute = require("./routes/tags");
+
 const audiobookroute = require("./routes/audiobooks");
+const userroute=require('./routes/users');
+const notificationroute=require('./routes/notifications');
+const tagroute=require('./routes/tags');
+const subscriptionroute=require('./routes/subscription');
+const categoryroute=require('./routes/category');
+const paymentroute=require('./routes/paymentDetails');
+
+
 
 const port = process.env.PORT;
 const cookieSession = require("cookie-session");
@@ -50,13 +56,18 @@ app.use((req, res, next) => {
 });
 
 //Routes
-app.use("/users", userroute);
-app.use("/notifications", notificationroute);
-app.use("/tags", tagroute);
+app.use('/users',userroute);
+app.use('/notifications',notificationroute);
+app.use('/tags',tagroute);
+app.use('/subscriptions',subscriptionroute);
+app.use('/categories',categoryroute);
 app.use("/audiobooks", audiobookroute);
-app.use("/", (req, res) => {
-  res.json("WELCOME TO SERVER");
-});
+app.use('/payments',paymentroute);
+
+
+app.use("/",(req,res)=>{
+    res.json("WELCOME TO SERVER")
+})
 
 // console.log(process.env.S)
 // console.log(process.env.MONGO_CONNECTION);
