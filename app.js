@@ -15,10 +15,14 @@ app.use(
 app.use(bodyparser.json());
 app.use(express.static(__dirname));
 
+const audiobookroute = require("./routes/audiobooks");
 const userroute = require("./routes/users");
 const notificationroute = require("./routes/notifications");
 const tagroute = require("./routes/tags");
-const audiobookroute = require("./routes/audiobooks");
+const subscriptionroute = require("./routes/subscription");
+const categoryroute = require("./routes/category");
+const paymentroute = require("./routes/paymentDetails");
+const likecomment = require("./routes/likecomment");
 
 const port = process.env.PORT;
 const cookieSession = require("cookie-session");
@@ -53,7 +57,12 @@ app.use((req, res, next) => {
 app.use("/users", userroute);
 app.use("/notifications", notificationroute);
 app.use("/tags", tagroute);
+app.use("/subscriptions", subscriptionroute);
+app.use("/categories", categoryroute);
 app.use("/audiobooks", audiobookroute);
+app.use("/payments", paymentroute);
+app.use("/likecomment", likecomment);
+
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });

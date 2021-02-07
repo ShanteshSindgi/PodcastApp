@@ -83,4 +83,5 @@ router.put("/editAudioBook/:audioBookId", audiobookController.editAudioBook);
 
 router.put("/editEpsode/:audioBookId", audiobookController.editEpsode);
 
+router.put("/likeAudio/:audioBookId", audiobookController.adduserlikes);
 module.exports = router;

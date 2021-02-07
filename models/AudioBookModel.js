@@ -45,6 +45,7 @@ const AudioBookSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  likes: { type: Number, default: 0 },
   audiouploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   audioverify: { type: Boolean, default: false },
   audioblock: { type: Boolean, default: false },

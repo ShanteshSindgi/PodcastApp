@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 mongoose.set("useFindAndModify", false);
+var uniqueValidator = require("mongoose-unique-validator");
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -22,5 +23,18 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  userLikes: [],
+  subscriptionTaken: [
+    {
+      subscriptionid: {
+        type: String,
+        default: "NA",
+      },
+      subscriptionPurchasedDate: {
+        type: Date,
+      },
+    },
+  ],
 });
 module.exports = mongoose.model("Users", UserSchema);
+UserSchema.plugin(uniqueValidator);

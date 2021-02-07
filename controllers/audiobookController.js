@@ -809,3 +809,40 @@ exports.editEpsode = async (req, res) => {
     );
   }
 };
+
+exports.adduserlikes = (req, res) => {
+  const audioBookId = req.params.audioBookId;
+  const userId = req.body.userID;
+  console.log(req.body);
+  if (!audioBookId || !userId) {
+    res.status(404).json({
+      message: "invalid params",
+    });
+  } else {
+    AudioBook.findOneAndUpdate(
+      { _id: audioBookId.trim() },
+      { $inc: { likes: 1 } },
+      (err, success) => {
+        if (err) {
+          res.status(204).json({
+            message: "Error while liking",
+          });
+        } else {
+          users.findOneAndUpdate(
+            { _id: userId },
+            { $push: { userLikes: audioBookId } },
+            (err, success) => {
+              if (err) {
+                res.status(204).json({
+                  message: "Error while liking",
+                });
+              } else {
+                res.status(200).json({ message: "user Like success" });
+              }
+            }
+          );
+        }
+      }
+    );
+  }
+};
