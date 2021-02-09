@@ -1,7 +1,7 @@
 const { mongoose } = require("mongoose");
 const AudioBook = require("./../models/AudioBookModel");
 const users = require("./../models/UserModel");
-
+const { ObjectId } = require("mongodb");
 exports.addAudiobook = async (req, res) => {
   const audioTitle = req.body.audioTitle;
   const audioDescription = req.body.audioDescription;
@@ -13,12 +13,13 @@ exports.addAudiobook = async (req, res) => {
       message: "Please Enter All AudioBooks Fields",
     });
   } else {
+    console.log("user", ObjectId(UserId));
     const audioBookObject = await new AudioBook({
       audioTitle: audioTitle.trim(),
       audioDescription: audioDescription.trim(),
       audioImage: audioImage.trim(),
       audioTag: audioTag,
-      uploadedBy: mongoose.Schema.Types.ObjectId(UserId.trim()),
+      audiouploadedBy: ObjectId(UserId.trim()),
     });
     audioBookObject
       .save()
@@ -597,7 +598,7 @@ exports.listofAudioBooks = async (req, res) => {
     AudioBookQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
   }
   AudioBookQuery.find()
-    .populate("uploadedBy", "username email", users)
+    .populate("audiouploadedBy", "username email", users)
     .then((data) => {
       if (data.length <= 0) {
         res.status(404).json({
@@ -623,12 +624,12 @@ exports.listofAudioBooks = async (req, res) => {
 
 exports.verifiyAudioBook = async (req, res) => {
   const audioBookId = req.params.audioBookId;
-  const verify = req.verify;
+  const verify = req.body.verify;
   AudioBook.findOneAndUpdate(
     {
       _id: audioBookId.trim(),
     },
-    { $set: { audioverify: verify } },
+    { $set: { audioverify: !verify } },
     (err, success) => {
       if (err) {
         console.log("AudioBook", err);

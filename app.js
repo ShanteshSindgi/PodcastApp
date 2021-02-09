@@ -4,8 +4,11 @@ const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 const bodyparser = require("body-parser");
-var multer = require("multer");
-var upload = multer();
+const multer = require("multer");
+const upload = multer();
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
 app.use(
   bodyparser.urlencoded({
     // to support URL-encoded bodies
@@ -15,6 +18,36 @@ app.use(
 app.use(bodyparser.json());
 app.use(express.static(__dirname));
 
+const options = {
+  definition: {
+    openapi: "1.0.0",
+    info: {
+      title: "Podcast Express API with Swagger",
+      version: "0.1.0",
+      description:
+        "This is a simple CRUD API application made with Express and documented with Swagger",
+      contact: {
+        name: "Shantesh Sindgi",
+        url: "",
+        email: "sindgishantesh@email.com",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:3200/",
+      },
+    ],
+  },
+  apis: ["./routes/users.js"],
+};
+
+const specs = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, { explorer: true })
+);
 const audiobookroute = require("./routes/audiobooks");
 const userroute = require("./routes/users");
 const notificationroute = require("./routes/notifications");

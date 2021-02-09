@@ -64,6 +64,36 @@ exports.fetchAllFeatureArea = async (req, res) => {
       });
     });
 };
+exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
+  const TotalLenght = await featureArea.estimatedDocumentCount(
+    {},
+    (err, count) => {
+      if (err) {
+        res.status(203).json({
+          message: "error while fetching Data",
+        });
+      } else {
+        return count;
+      }
+    }
+  );
+
+  featureArea
+    .find({}, { featureAudios: 0 })
+    .then((data) => {
+      res.status(200).json({
+        message: "All Feature Area",
+        Data: data,
+        TotalLenght: TotalLenght,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(203).json({
+        message: "error while fetching Data",
+      });
+    });
+};
 exports.addNewMedia = async (req, res) => {
   const featureId = req.params.featureId;
   const media = req.body.media;
