@@ -597,7 +597,7 @@ exports.listofAudioBooks = async (req, res) => {
     AudioBookQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
   }
   AudioBookQuery.find()
-    .populate("uploadedBy", "username email", users)
+    .populate("audiouploadedBy", "username email", users)
     .then((data) => {
       if (data.length <= 0) {
         res.status(404).json({
@@ -623,7 +623,9 @@ exports.listofAudioBooks = async (req, res) => {
 
 exports.verifiyAudioBook = async (req, res) => {
   const audioBookId = req.params.audioBookId;
-  const verify = req.verify;
+  console.log("verify"+req.body.verify);
+  const verify = !req.body.verify;
+
   AudioBook.findOneAndUpdate(
     {
       _id: audioBookId.trim(),
@@ -633,11 +635,11 @@ exports.verifiyAudioBook = async (req, res) => {
       if (err) {
         console.log("AudioBook", err);
         res.status(204).json({
-          message: "can not " + verify ? "verify" : "unverify" + " AudioBook",
+          message: "Can Not " + verify ? "verify" : "unverify" + " AudioBook",
         });
       } else {
         res.status(200).json({
-          message: "AudioBook " + verify ? "verified" : "unverified",
+          message: verify ? 'AudioBook Verified':'AudioBook Not Verified',
         });
       }
     }
@@ -645,7 +647,7 @@ exports.verifiyAudioBook = async (req, res) => {
 };
 exports.BlockunBlockAudioBook = async (req, res) => {
   const audioBookId = req.params.audioBookId;
-  const block = req.block;
+  const block = !req.body.block;
   AudioBook.findOneAndUpdate(
     {
       _id: audioBookId.trim(),
