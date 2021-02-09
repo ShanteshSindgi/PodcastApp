@@ -591,10 +591,12 @@ exports.listofAudioBooks = async (req, res) => {
     }
     return count;
   });
+  const AudioBookQuery = AudioBook.find();
+
   if (pagesize && currentpage) {
-    AudioBook.skip(pagesize * (currentpage - 1)).limit(pagesize);
+    AudioBookQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
   }
-  AudioBook.find()
+  AudioBookQuery.find()
     .populate("uploadedBy", "username email", users)
     .then((data) => {
       if (data.length <= 0) {
