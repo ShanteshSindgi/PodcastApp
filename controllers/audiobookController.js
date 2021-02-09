@@ -589,7 +589,6 @@ exports.listofAudioBooks = async (req, res) => {
     if (Err) {
       console.log(Err);
     }
-    console.log("count", count);
     return count;
   });
   if (pagesize && currentpage) {

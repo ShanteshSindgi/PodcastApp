@@ -26,6 +26,29 @@ exports.getUserlikesAndComments = async (req, res) => {
 };
 exports.getUserComments = async (req, res) => {
   const userId = req.params.userID;
+  const pagesize = +req.query.pagesize;
+  const currentpage = +req.query.page;
+
+  const TotalLenght = await audioBook.countDocuments(
+    {
+      $or: [
+        { "audioComments.userId": userId },
+        { "audioComments.response.userId": userId },
+      ],
+    },
+    (err, count) => {
+      if (err) {
+        res.status(203).json({
+          message: "error while fetching Data",
+        });
+      } else {
+        return count;
+      }
+    }
+  );
+  if (pagesize && currentpage) {
+    audioBook.skip(pagesize * (currentpage - 1)).limit(pagesize);
+  }
   if (!userId) {
     res.status(204).json({
       message: "Invalid params",
@@ -35,7 +58,7 @@ exports.getUserComments = async (req, res) => {
       .find(
         {
           $or: [
-            { "audioComments._id": userId },
+            { "audioComments.userId": userId },
             { "audioComments.response.userId": userId },
           ],
         },
@@ -45,6 +68,7 @@ exports.getUserComments = async (req, res) => {
         res.status(200).json({
           message: "User Comment",
           data: data,
+          TotalLenght: TotalLenght,
         });
       })
       .catch((err) => {

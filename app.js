@@ -23,7 +23,7 @@ const subscriptionroute = require("./routes/subscription");
 const categoryroute = require("./routes/category");
 const paymentroute = require("./routes/paymentDetails");
 const likecomment = require("./routes/likecomment");
-
+const featureArea = require("./routes/featureArea");
 const port = process.env.PORT;
 const cookieSession = require("cookie-session");
 const passport = require("passport");
@@ -62,7 +62,7 @@ app.use("/categories", categoryroute);
 app.use("/audiobooks", audiobookroute);
 app.use("/payments", paymentroute);
 app.use("/likecomment", likecomment);
-
+app.use("/featureArea", featureArea);
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });
