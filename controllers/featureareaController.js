@@ -54,8 +54,8 @@ exports.fetchAllFeatureArea = async (req, res) => {
     .then((data) => {
       res.status(200).json({
         message: "All Feature Area",
-        Data: data,
-        TotalLenght: TotalLenght,
+        data: data,
+        totallength: TotalLenght,
       });
     })
     .catch((err) => {
@@ -84,7 +84,7 @@ exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
       res.status(200).json({
         message: "All Feature Area",
         Data: data,
-        TotalLenght: TotalLenght,
+        totallength: TotalLenght,
       });
     })
     .catch((err) => {
@@ -97,6 +97,7 @@ exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
 exports.addNewMedia = async (req, res) => {
   const featureId = req.params.featureId;
   const media = req.body.media;
+  console.log(featureId,media);
 
   if (!featureId) {
     if (media instanceof String) {
@@ -112,10 +113,11 @@ exports.addNewMedia = async (req, res) => {
     featureArea.findOneAndUpdate(
       { _id: featureId },
       {
-        $pushAll: { featureAudios: media },
+        $push: { featureAudios:{ $each : media} },
       },
       (err, success) => {
         if (err) {
+          console.log(err);
           res.status(203).json({
             message: "error While Adding Data ",
           });
