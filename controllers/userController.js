@@ -179,12 +179,10 @@ exports.updateUser = async (req, res) => {
   const userid = await req.params.userid;
   const username = await req.body.username;
   const email = await req.body.email;
-  console.log("body", req.body);
-  console.log(userid, username, email);
 
   if (!userid || !username || !email) {
     res.status(404).json({
-      message: "User Not Found",
+      message: "invalid Params",
     });
   } else {
     User.findByIdAndUpdate(
@@ -242,8 +240,8 @@ exports.deleteUser = (req, res) => {
 
 exports.userStatus = (req, res) => {
   const userid = req.params.userid;
-  const status = req.query.status === "true";
-
+  const status = !req.query.status;
+  console.log(status);
   if (!userid) {
     res.status(404).json({
       message: "User not found",

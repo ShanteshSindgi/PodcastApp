@@ -35,6 +35,25 @@ const UserSchema = new mongoose.Schema({
       },
     },
   ],
+  playLists: [
+    {
+      playlistName: {
+        type: String,
+      },
+      playlistSongs: [
+        {
+          audioId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "audio_books",
+          },
+          episodeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "audio_books",
+          },
+        },
+      ],
+    },
+  ],
 });
 module.exports = mongoose.model("Users", UserSchema);
 UserSchema.plugin(uniqueValidator);

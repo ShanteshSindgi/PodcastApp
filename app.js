@@ -8,7 +8,7 @@ const multer = require("multer");
 const upload = multer();
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-
+app.use(bodyparser.urlencoded());
 app.use(
   bodyparser.urlencoded({
     // to support URL-encoded bodies
@@ -20,7 +20,6 @@ app.use(express.static(__dirname));
 
 const options = {
   definition: {
-    openapi: "1.0.0",
     info: {
       title: "Podcast Express API with Swagger",
       version: "0.1.0",
@@ -38,16 +37,16 @@ const options = {
       },
     ],
   },
-  apis: ["./routes/users.js"],
+  apis: ["./routes/users.js", "./routes/notifications.js"],
 };
 
 const specs = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(
   "/api-docs",
   swaggerUi.serve,
   swaggerUi.setup(specs, { explorer: true })
 );
+console.log(specs);
 const audiobookroute = require("./routes/audiobooks");
 const userroute = require("./routes/users");
 const notificationroute = require("./routes/notifications");
@@ -57,6 +56,7 @@ const categoryroute = require("./routes/category");
 const paymentroute = require("./routes/paymentDetails");
 const likecomment = require("./routes/likecomment");
 const featureArea = require("./routes/featureArea");
+const playlist = require("./routes/playlist");
 const port = process.env.PORT;
 const cookieSession = require("cookie-session");
 const passport = require("passport");
@@ -96,6 +96,7 @@ app.use("/audiobooks", audiobookroute);
 app.use("/payments", paymentroute);
 app.use("/likecomment", likecomment);
 app.use("/featureArea", featureArea);
+app.use("/playlist", playlist);
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });
