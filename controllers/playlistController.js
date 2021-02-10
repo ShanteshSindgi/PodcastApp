@@ -2,7 +2,7 @@ const user = require("../models/UserModel");
 const audiobooks = require("../models/AudioBookModel");
 
 exports.getuserplaylist = async (req, res) => {
-  const userId = req.query.userId;
+  const userId = req.params.userId;
   console.log("userId", userId);
   if (!userId) {
     res.status(404).json({

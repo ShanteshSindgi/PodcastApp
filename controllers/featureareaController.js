@@ -33,7 +33,9 @@ exports.fetchAllFeatureArea = async (req, res) => {
   const pagesize = +req.query.pagesize;
   const currentpage = +req.query.page;
 
-  const TotalLenght = await featureArea.estimatedDocumentCount(
+  const FeatureQuery = featureArea.find();
+
+  const TotalLenght = await FeatureQuery.estimatedDocumentCount(
     {},
     (err, count) => {
       if (err) {
@@ -46,9 +48,9 @@ exports.fetchAllFeatureArea = async (req, res) => {
     }
   );
   if (pagesize && currentpage) {
-    featureArea.skip(pagesize * (currentpage - 1)).limit(pagesize);
+    FeatureQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
   }
-  featureArea
+  FeatureQuery
     .find()
     .populate("featureAudios", audioBook)
     .then((data) => {
