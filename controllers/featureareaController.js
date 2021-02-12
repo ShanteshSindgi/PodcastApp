@@ -3,8 +3,10 @@ const audioBook = require("../models/AudioBookModel");
 exports.AddnewFeatureArea = async (req, res) => {
   const featureName = req.body.featureName;
   const featurePosition = req.body.featurePosition;
+  console.log(featureName, featurePosition);
   const featureAudios = req.body.featureAudios;
-  if (!featureName || !featurePosition) {
+  if (!featureName) {
+    console.log(!featurePosition);
     res.status(404).json({
       message: "Invalid Params",
     });
@@ -32,7 +34,9 @@ exports.fetchAllFeatureArea = async (req, res) => {
   const pagesize = +req.query.pagesize;
   const currentpage = +req.query.page;
 
-  const TotalLenght = await featureArea.estimatedDocumentCount(
+  const FeatureQuery = featureArea.find();
+
+  const TotalLenght = await FeatureQuery.estimatedDocumentCount(
     {},
     (err, count) => {
       if (err) {
@@ -45,10 +49,9 @@ exports.fetchAllFeatureArea = async (req, res) => {
     }
   );
   if (pagesize && currentpage) {
-    featureArea.skip(pagesize * (currentpage - 1)).limit(pagesize);
+    FeatureQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
   }
-  featureArea
-    .find()
+  FeatureQuery.find()
     .populate("featureAudios", audioBook)
     .then((data) => {
       res.status(200).json({
@@ -132,6 +135,7 @@ exports.addNewMedia = async (req, res) => {
 exports.removeMedia = async (req, res) => {
   const featureId = req.params.featureId;
   const mediaId = req.body.mediaId;
+  console.log(featureId, mediaId);
   if (!featureId || !mediaId) {
     res.status(404).json({
       message: "Invalid Params",

@@ -1,26 +1,94 @@
-const tags = require("./../models/tagsModel");
+const tags = require('./../models/tagsModel');
+const { count } = require('./../models/tagsModel');
+
 
 exports.addTag = async (req, res) => {
-  const tagName = req.body.tagName;
-  const tagDescription = req.body.tagDescription;
-  if (!tagName || !tagDescription) {
-    res.status(404).json({
-      message: "Please Enter All tag Fields",
-    });
-  } else {
-    const tagObject = await new tags({
-      tagName: req.body.tagName,
-      tagDescription: req.body.tagDescription,
-    });
 
-    tagObject
-      .save()
-      .then(
+    const tagName = req.body.tagName;
+    const tagDescription = req.body.tagDescription;
+    if (!tagName || !tagDescription) {
+        res.status(404).json({
+            "message": "Please Enter All tag Fields"
+        })
+    } else {
+
+        const tagObject = await new tags({
+                tagName: req.body.tagName,
+                tagDescription: req.body.tagDescription
+            }
+
+        );
+
+        tagObject.save().then(
+            (data) => {
+                res.status(200).json({
+                    "message": "tag Added Successfully"
+                });
+            },
+            (err)=>{
+                if(err)
+                res.status(204).json({
+                    "message": "Duplicate Tag Found"
+                });
+
+            }
+        ).catch(
+            (err) => {
+                if(err)
+                {
+                res.status(204).json({
+                    "message": "Tag not added"
+                })
+            }
+            }
+        )
+    }
+
+}
+
+
+exports.fetchtags = async(req, res) => {
+
+
+    
+    const pagesize = +req.query.pagesize;
+    const currentpage = +req.query.page;
+    const tagQuery = tags.find();
+
+    const Count = await tags.estimatedDocumentCount({}, (Err, count) => {
+        if (Err) {
+          console.log(Err);
+        }
+        return count;
+      });
+
+    if (pagesize && currentpage) {
+        tagQuery
+            .skip(pagesize * (currentpage - 1))
+            .limit(pagesize)
+
+    }
+    tagQuery.find().then(
         (data) => {
-          res.status(200).json({
-            message: "tag Added Successfully",
-          });
-        },
+            if (data.length <= 0) {
+                res.status(404).json({
+                    message: "No tags Available",
+                    data:data,
+                    totallength:Count
+
+                    
+                });
+
+            }
+            else{
+            res.status(200).json({
+                message: "tags fetched successfully",
+                data: data,
+                totallength:Count
+            });
+        }
+        }
+    ).catch(
         (err) => {
           if (err)
             res.status(204).json({
