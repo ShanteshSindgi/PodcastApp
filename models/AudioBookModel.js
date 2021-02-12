@@ -50,14 +50,18 @@ const AudioBookSchema = new mongoose.Schema({
   audioverify: { type: Boolean, default: false },
   audioblock: { type: Boolean, default: false },
   audioComments: [commentsSchema],
-  audioEpsodes: [
+  ispodcast: {
+    type: Boolean,
+    default: false,
+  },
+  audioEpisode: [
     {
       title: String,
       description: String,
       streamUrl: String,
       likes: Number,
-      epsodeImage: String,
-      epsodeComments: [commentsSchema],
+      episodeImage: String,
+      episodeComments: [commentsSchema],
       addedon: {
         type: Date,
         default: Date.now(),

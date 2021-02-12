@@ -4,8 +4,7 @@ exports.AddnewFeatureArea = async (req, res) => {
   const featureName = req.body.featureName;
   const featurePosition = req.body.featurePosition;
   const featureAudios = req.body.featureAudios;
-  if (!featureName || !featurePosition !== true) {
-    console.log(!featurePosition);
+  if (!featureName || !featurePosition) {
     res.status(404).json({
       message: "Invalid Params",
     });
@@ -23,7 +22,7 @@ exports.AddnewFeatureArea = async (req, res) => {
         });
       })
       .catch((Err) => {
-        res.status(203).json({
+        res.status(204).json({
           message: "error while creating feature area ",
         });
       });
@@ -37,7 +36,7 @@ exports.fetchAllFeatureArea = async (req, res) => {
     {},
     (err, count) => {
       if (err) {
-        res.status(203).json({
+        res.status(204).json({
           message: "error while fetching Data",
         });
       } else {
@@ -59,7 +58,7 @@ exports.fetchAllFeatureArea = async (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(203).json({
+      res.status(204).json({
         message: "error while fetching Data",
       });
     });
@@ -69,7 +68,7 @@ exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
     {},
     (err, count) => {
       if (err) {
-        res.status(203).json({
+        res.status(204).json({
           message: "error while fetching Data",
         });
       } else {
@@ -89,7 +88,7 @@ exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      res.status(203).json({
+      res.status(204).json({
         message: "error while fetching Data",
       });
     });
@@ -97,7 +96,6 @@ exports.fetchAllFeatureAreaWithoutMedia = async (req, res) => {
 exports.addNewMedia = async (req, res) => {
   const featureId = req.params.featureId;
   const media = req.body.media;
-  console.log(featureId,media);
 
   if (!featureId) {
     if (media instanceof String) {
@@ -113,12 +111,12 @@ exports.addNewMedia = async (req, res) => {
     featureArea.findOneAndUpdate(
       { _id: featureId },
       {
-        $push: { featureAudios:{ $each : media} },
+        $push: { featureAudios: { $each: media } },
       },
       (err, success) => {
         if (err) {
           console.log(err);
-          res.status(203).json({
+          res.status(204).json({
             message: "error While Adding Data ",
           });
         } else {
@@ -142,11 +140,11 @@ exports.removeMedia = async (req, res) => {
     featureArea.findOneAndUpdate(
       { _id: featureId },
       {
-        $pull: { "featureAudios.$[]._id": { $in: [mediaId.trim()] } },
+        $pull: { featureAudios: { $in: [mediaId.trim()] } },
       },
       (err, success) => {
         if (err) {
-          res.status(203).json({
+          res.status(204).json({
             message: "error While removing Data ",
           });
         } else {

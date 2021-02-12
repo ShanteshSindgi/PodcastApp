@@ -37,7 +37,17 @@ const options = {
       },
     ],
   },
-  apis: ["./routes/users.js", "./routes/notifications.js"],
+  apis: [
+    "./routes/users.js",
+    "./routes/notifications.js",
+    "./routes/tags.js",
+    "./routes/subscription.js",
+    "./routes/category.js",
+    "./routes/paymentDetails.js",
+    "./routes/likecomment.js",
+    "./routes/featureArea.js",
+    "./routes/playlist.js",
+  ],
 };
 
 const specs = swaggerJsdoc(options);
@@ -92,11 +102,11 @@ app.use("/notifications", notificationroute);
 app.use("/tags", tagroute);
 app.use("/subscriptions", subscriptionroute);
 app.use("/categories", categoryroute);
-app.use("/audiobooks", audiobookroute);
 app.use("/payments", paymentroute);
 app.use("/likecomment", likecomment);
 app.use("/featureArea", featureArea);
 app.use("/playlist", playlist);
+app.use("/audiobooks", audiobookroute);
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });
