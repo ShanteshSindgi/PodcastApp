@@ -1,4 +1,5 @@
 const tags = require('./../models/tagsModel');
+const { count } = require('./../models/tagsModel');
 
 
 exports.addTag = async (req, res) => {
@@ -46,11 +47,21 @@ exports.addTag = async (req, res) => {
 }
 
 
-exports.fetchtags = (req, res) => {
+exports.fetchtags = async(req, res) => {
 
+
+    
     const pagesize = +req.query.pagesize;
     const currentpage = +req.query.page;
     const tagQuery = tags.find();
+
+    const Count = await tags.estimatedDocumentCount({}, (Err, count) => {
+        if (Err) {
+          console.log(Err);
+        }
+        return count;
+      });
+
     if (pagesize && currentpage) {
         tagQuery
             .skip(pagesize * (currentpage - 1))
@@ -62,7 +73,9 @@ exports.fetchtags = (req, res) => {
             if (data.length <= 0) {
                 res.status(404).json({
                     message: "No tags Available",
-                    data:data
+                    data:data,
+                    totallength:Count
+
                     
                 });
 
@@ -70,7 +83,8 @@ exports.fetchtags = (req, res) => {
             else{
             res.status(200).json({
                 message: "tags fetched successfully",
-                data: data
+                data: data,
+                totallength:Count
             });
         }
         }

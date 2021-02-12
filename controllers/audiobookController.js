@@ -630,7 +630,7 @@ exports.verifiyAudioBook = async (req, res) => {
     {
       _id: audioBookId.trim(),
     },
-    { $set: { audioverify: !verify } },
+    { $set: { audioverify: verify } },
     (err, success) => {
       if (err) {
         console.log("AudioBook", err);

@@ -240,8 +240,9 @@ exports.deleteUser = (req, res) => {
 
 exports.userStatus = (req, res) => {
   const userid = req.params.userid;
-  const status = !req.query.status;
-  console.log(status);
+  console.log(req.query.status);
+  const status = (req.query.status === 'true');
+
   if (!userid) {
     res.status(404).json({
       message: "User not found",

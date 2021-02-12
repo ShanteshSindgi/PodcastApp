@@ -3,8 +3,9 @@ const audioBook = require("../models/AudioBookModel");
 exports.AddnewFeatureArea = async (req, res) => {
   const featureName = req.body.featureName;
   const featurePosition = req.body.featurePosition;
+  console.log(featureName,featurePosition)
   const featureAudios = req.body.featureAudios;
-  if (!featureName || !featurePosition !== true) {
+  if (!featureName) {
     console.log(!featurePosition);
     res.status(404).json({
       message: "Invalid Params",
@@ -132,10 +133,11 @@ exports.addNewMedia = async (req, res) => {
     );
   }
 };
-
+  
 exports.removeMedia = async (req, res) => {
   const featureId = req.params.featureId;
   const mediaId = req.body.mediaId;
+  console.log(featureId,mediaId)
   if (!featureId || !mediaId) {
     res.status(404).json({
       message: "Invalid Params",
@@ -144,7 +146,7 @@ exports.removeMedia = async (req, res) => {
     featureArea.findOneAndUpdate(
       { _id: featureId },
       {
-        $pull: { "featureAudios.$[]._id": { $in: [mediaId.trim()] } },
+        $pull: { "featureAudios": { $in: [mediaId.trim()] } },
       },
       (err, success) => {
         if (err) {

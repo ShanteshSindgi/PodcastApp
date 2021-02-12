@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 mongoose.set("useFindAndModify", false);
+var uniqueValidator = require("mongoose-unique-validator");
 
 const featureAreaSchema = new mongoose.Schema({
   featureName: {
@@ -8,6 +9,7 @@ const featureAreaSchema = new mongoose.Schema({
   },
   featurePosition: {
     type: Number,
+    unique:true,
     default: 0,
   },
   featureAudios: [
@@ -18,3 +20,5 @@ const featureAreaSchema = new mongoose.Schema({
   ],
 });
 module.exports = mongoose.model("featureArea", featureAreaSchema);
+featureAreaSchema.plugin(uniqueValidator);
+
