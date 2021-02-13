@@ -103,8 +103,7 @@ exports.fetchtags = async(req, res) => {
           });
         }
       });
-  }
-};
+  };
 
 exports.fetchtags = (req, res) => {
   const pagesize = +req.query.pagesize;

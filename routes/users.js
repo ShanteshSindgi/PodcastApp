@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("./../controllers/userController");
 const passport = require("passport");
+const checkAuth=require('./../middleware/checkAuth');
 const { getAccessToken } = require("../middleware/passport-setup");
 require("./../middleware/passport-setup");
 
@@ -69,7 +70,7 @@ router.get(
  *        200:
  *          description : Success
  */
-router.get("/userDetails", userController.fetchUsers);
+router.get("/userDetails",userController.fetchUsers);
 
 /**
  * @swagger
