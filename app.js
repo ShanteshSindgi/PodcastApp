@@ -39,6 +39,7 @@ const options = {
   },
   apis: [
     "./routes/users.js",
+    "./routes/dashboard.js",
     "./routes/notifications.js",
     "./routes/tags.js",
     "./routes/subscription.js",
@@ -48,6 +49,7 @@ const options = {
     "./routes/featureArea.js",
     "./routes/playlist.js",
     "./routes/audiobooks.js",
+    "./routes/uploads3.js",
   ],
 };
 
@@ -68,6 +70,8 @@ const paymentroute = require("./routes/paymentDetails");
 const likecomment = require("./routes/likecomment");
 const featureArea = require("./routes/featureArea");
 const playlist = require("./routes/playlist");
+const dashboard = require("./routes/dashboard");
+const uploads3 = require("./routes/uploads3");
 const port = process.env.PORT;
 const cookieSession = require("cookie-session");
 const passport = require("passport");
@@ -108,6 +112,8 @@ app.use("/likecomment", likecomment);
 app.use("/featureArea", featureArea);
 app.use("/playlist", playlist);
 app.use("/audiolist", audiobookroute);
+app.use("/dashboard", dashboard);
+app.use("/uploads3", uploads3);
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });

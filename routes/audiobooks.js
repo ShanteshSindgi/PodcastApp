@@ -392,7 +392,7 @@ router.put("/viewAudio/:audioBookId", audiobookController.viewAudio);
  *            properties:
  *              commentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -431,7 +431,7 @@ router.put(
  *            properties:
  *              commentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -473,7 +473,7 @@ router.put(
  *                type : string
  *              childCommentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -515,7 +515,7 @@ router.put(
  *                type : string
  *              childCommentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -557,7 +557,7 @@ router.put(
  *                type : string
  *              commentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -599,7 +599,7 @@ router.put(
  *                type : string
  *              commentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -643,7 +643,7 @@ router.put(
  *                type : string
  *              childCommentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -686,7 +686,7 @@ router.put(
  *                type : string
  *              childCommentId :
  *                type : string
- *              userId :
+ *              userID :
  *                type : string
  *      responses:
  *        200:
@@ -785,7 +785,7 @@ router.get("/listofPodcast", audiobookController.listofpodcast);
  *            type: object
  *            properties:
  *              verify :
- *                type : string
+ *                type : boolean
  *      responses:
  *        200:
  *          description : Success
@@ -820,7 +820,7 @@ router.put("/verifiyAudioBook/:audioId", audiobookController.verifiyAudioBook);
  *            type: object
  *            properties:
  *              block :
- *                type : string
+ *                type : boolean
  *      responses:
  *        200:
  *          description : Success
@@ -831,7 +831,7 @@ router.put("/verifiyAudioBook/:audioId", audiobookController.verifiyAudioBook);
  */
 
 router.put(
-  "/BlockunBlockAudioBook/:audioBookId",
+  "/BlockunBlockAudio/:audioId",
   audiobookController.BlockunBlockAudio
 );
 /**
@@ -877,6 +877,14 @@ router.delete("/deleteAudio/:audioId", audiobookController.deleteAudio);
  *          type: string
  *          required: true
  *          description: uuid ID of the Audio.
+ *        - in: body
+ *          name: body
+ *          description: params.
+ *          schema:
+ *            type: object
+ *            properties:
+ *              episodeId :
+ *                type : string
  *      responses:
  *        200:
  *          description : Success
@@ -931,12 +939,12 @@ router.put("/editAudio/:audioId", audiobookController.editAudio);
 
 /**
  * @swagger
- * /audiolist/editAudio/{audioId}:
+ * /audiolist/editEpisode/{audioId}:
  *    put:
  *      tags:
  *        - Podcast And AudioBook
- *      descriptions: Edit Audio
- *      summary: Edit Audio
+ *      descriptions: Edit episode
+ *      summary: Edit episode
  *      consumes:
  *        - application/json
  *      parameters:
@@ -993,7 +1001,7 @@ router.put("/editEpisode/:audioId", audiobookController.editEpisode);
  *          schema:
  *            type: object
  *            properties:
- *              userId:
+ *              userID:
  *                type : string
  *      responses:
  *        200:
