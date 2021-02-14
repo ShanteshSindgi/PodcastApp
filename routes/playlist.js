@@ -4,7 +4,7 @@ const playlistController = require("../controllers/playlistController");
 
 /**
  * @swagger
- * /playlist/getuserplaylist:
+ * /playlist/getuserplaylist:y
  *    get:
  *      tags:
  *        - playlist

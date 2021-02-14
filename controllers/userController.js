@@ -327,7 +327,7 @@ exports.userStatus = (req, res) => {
           });
           console.log(err);
         } else {
-          res.status(200).json({
+          res.status(204).json({
             message: "User Status Updated Successfully",
           });
         }
