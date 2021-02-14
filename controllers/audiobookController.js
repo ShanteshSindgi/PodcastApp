@@ -13,7 +13,6 @@ exports.addAudiobook = async (req, res) => {
       message: "Please Enter All AudioBooks Fields",
     });
   } else {
-    console.log("user", ObjectId(UserId));
     const audioBookObject = await new AudioBook({
       audioTitle: audioTitle.trim(),
       audioDescription: audioDescription.trim(),
@@ -36,12 +35,50 @@ exports.addAudiobook = async (req, res) => {
       });
   }
 };
-exports.AddaudioEpsodes = async (req, res) => {
+
+//podcast
+exports.addpodcast = async (req, res) => {
+  const audioTitle = req.body.audioTitle;
+  const audioDescription = req.body.audioDescription;
+  const audioImage = req.body.audioImage;
+  const audioTag = req.body.audioTag;
+  const UserId = req.body.userID;
+  if (!audioTitle || !audioDescription || !audioImage || !audioTag || !UserId) {
+    res.status(404).json({
+      message: "Please Enter All AudioBooks Fields",
+    });
+  } else {
+    const audioBookObject = await new AudioBook({
+      audioTitle: audioTitle.trim(),
+      audioDescription: audioDescription.trim(),
+      audioImage: audioImage.trim(),
+      audioTag: audioTag,
+      audiouploadedBy: ObjectId(UserId.trim()),
+      ispodcast: true,
+    });
+    audioBookObject
+      .save()
+      .then((data) => {
+        res.status(200).json({
+          message: "Podcast Added Successfully",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(204).json({
+          message: "Podcast not Added",
+        });
+      });
+  }
+};
+
+exports.AddaudioEpisode = async (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
   const streamUrl = req.body.streamUrl;
-  const audioBookId = req.params.audioBookId;
-  if (!title || !description || !streamUrl || !audioBookId) {
+  const episodeImage = req.body.episodeImage;
+  const audioId = req.params.audioId;
+  if (!title || !description || !streamUrl || !audioId || !episodeImage) {
     res.status(404).json({
       message: "Please Enter All Epsode Fields",
     });
@@ -50,30 +87,31 @@ exports.AddaudioEpsodes = async (req, res) => {
       title: title,
       description: description,
       streamUrl: streamUrl,
+      episodeImage: episodeImage,
     };
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim() },
-      { $push: { audioEpsodes: Data } },
+      { _id: audioId.trim() },
+      { $push: { audioEpisode: Data } },
       (err, success) => {
         if (err) {
-          console.log("AudioBook", err);
+          console.log("Audio", err);
           res.status(204).json({
-            message: "AudioBook not Added",
+            message: "Episode not Added",
           });
         } else {
           res.status(200).json({
-            message: "Epsode Added Successfully",
+            message: "Episode Added Successfully",
           });
         }
       }
     );
   }
 };
-exports.addCommentAudiobook = async (req, res) => {
+exports.addCommentAudio = async (req, res) => {
   const comment = req.body.comment;
   const userID = req.body.userID;
-  const audioBookId = req.params.audioBookId;
-  if (!comment || !userID || !audioBookId) {
+  const audioId = req.params.audioId;
+  if (!comment || !userID || !audioId) {
     res.status(404).json({
       message: "Please Enter All Comment Fields",
     });
@@ -83,13 +121,13 @@ exports.addCommentAudiobook = async (req, res) => {
       userId: userID,
     };
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim() },
+      { _id: audioId.trim() },
       { $push: { audioComments: Data } },
       (err, success) => {
         if (err) {
           console.log("AudioBook", err);
           res.status(204).json({
-            message: "Comment to AudioBook not Added",
+            message: "Comment to Audio not Added",
           });
         } else {
           res.status(200).json({
@@ -100,7 +138,7 @@ exports.addCommentAudiobook = async (req, res) => {
     );
   }
 };
-exports.addCommentResponseAudiobook = async (req, res) => {
+exports.addCommentResponseAudio = async (req, res) => {
   const comment = req.body.comment;
   const commentId = req.body.commentId;
   const userID = req.body.userID;
@@ -132,12 +170,12 @@ exports.addCommentResponseAudiobook = async (req, res) => {
     );
   }
 };
-exports.addcommentEpsode = async (req, res) => {
+exports.addcommentEpisode = async (req, res) => {
   const comment = await req.body.comment;
-  const epsodeId = await req.body.epsodeId;
+  const episodeId = await req.body.epsodeId;
   const userID = await req.body.userID;
-  const audioBookId = await req.params.audioBookId;
-  if (!comment || !userID || !audioBookId || !epsodeId) {
+  const audioId = await req.params.audioId;
+  if (!comment || !userID || !audioId || !episodeId) {
     res.status(404).json({
       message: "Please Enter All Comment response Fields",
     });
@@ -148,10 +186,10 @@ exports.addcommentEpsode = async (req, res) => {
     };
 
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim(), "audioEpsodes._id": epsodeId },
+      { _id: audioId.trim(), "audioEpisode._id": episodeId },
       {
         $push: {
-          "audioEpsodes.$[].epsodeComments": {
+          "audioEpisode.$[].episodeComments": {
             Data,
           },
         },
@@ -171,13 +209,13 @@ exports.addcommentEpsode = async (req, res) => {
     );
   }
 };
-exports.addCommentResponseEpsode = async (req, res) => {
+exports.addCommentResponseEpisode = async (req, res) => {
   const comment = req.body.comment;
-  const epsodeId = req.body.epsodeId;
+  const episodeId = req.body.episodeId;
   const commentId = req.body.commentId;
   const userID = req.body.userID;
-  const audioBookId = req.params.audioBookId;
-  if (!comment || !userID || !audioBookId || !epsodeId || !commentId) {
+  const audioId = req.params.audioId;
+  if (!comment || !userID || !audioId || !episodeId || !commentId) {
     res.status(404).json({
       message: "Please Enter All Comment response Fields",
     });
@@ -188,13 +226,13 @@ exports.addCommentResponseEpsode = async (req, res) => {
     };
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId.trim(),
-        "audioEpsodes.epsodeComments._id": commentId.trim(),
+        _id: audioId.trim(),
+        "audioEpisode._id": episodeId.trim(),
+        "audioEpisode.episodeComments._id": commentId.trim(),
       },
       {
         $push: {
-          "audioEpsodes.$[].epsodeComments.$[].response": {
+          "audioEpisode.$[].episodeComments.$[].response": {
             Data,
           },
         },
@@ -214,15 +252,15 @@ exports.addCommentResponseEpsode = async (req, res) => {
     );
   }
 };
-exports.subscribeAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  if (!audioBookId) {
+exports.subscribeAudio = async (req, res) => {
+  const audioId = req.params.audioId;
+  if (!audioId) {
     res.status(404).json({
       message: "Please pass AudioBook Id",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId },
+      { _id: audioId },
       {
         $inc: { audioTotalSubscriptions: 1 },
       },
@@ -241,15 +279,15 @@ exports.subscribeAudioBook = async (req, res) => {
     );
   }
 };
-exports.unsubscribeAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  if (!audioBookId) {
+exports.unsubscribeAudio = async (req, res) => {
+  const audioId = req.params.audioId;
+  if (!audioId) {
     res.status(404).json({
       message: "Please pass AudioBook Id",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId },
+      { _id: audioId },
       {
         $inc: { audioTotalSubscriptions: -1 },
       },
@@ -268,15 +306,16 @@ exports.unsubscribeAudioBook = async (req, res) => {
     );
   }
 };
-exports.viewAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  if (!audioBookId) {
+
+exports.viewAudio = async (req, res) => {
+  const audioId = req.params.audioId;
+  if (!audioId) {
     res.status(404).json({
       message: "Please pass AudioBook Id",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId },
+      { _id: audioId },
       {
         $inc: { audioTotalViews: 1 },
       },
@@ -295,13 +334,13 @@ exports.viewAudioBook = async (req, res) => {
     );
   }
 };
-exports.likesAudioBookComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.likesAudioComment = async (req, res) => {
+  const audioId = req.params.audioId;
   const commentId = req.body.commentId;
   const userId = req.body.userID;
-  if (!audioBookId || !commentId || !userId) {
+  if (!audioId || !commentId || !userId) {
     res.status(404).json({
-      message: "Please pass AudioBook Id",
+      message: "Please pass Audio Id",
     });
   } else {
     AudioBook.findOneAndUpdate(
@@ -324,17 +363,17 @@ exports.likesAudioBookComment = async (req, res) => {
     );
   }
 };
-exports.unlikesAudioBookComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.unlikesAudioComment = async (req, res) => {
+  const audioId = req.params.audioId;
   const commentId = req.body.commentId;
   const userId = req.body.userID;
-  if (!audioBookId || !commentId || !userId) {
+  if (!audioId || !commentId || !userId) {
     res.status(404).json({
       message: "Please pass all data ",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim(), "audioComments._id": commentId.trim() },
+      { _id: audioId.trim(), "audioComments._id": commentId.trim() },
       {
         $pull: { "audioComments.$[].likes": { $in: [userId.trim()] } },
       },
@@ -354,19 +393,19 @@ exports.unlikesAudioBookComment = async (req, res) => {
   }
 };
 
-exports.likesAudioBookResponseComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.likesAudioResponseComment = async (req, res) => {
+  const audioId = req.params.audioId;
   const userId = req.body.userID;
   const parentcommentId = req.body.parentcommentId;
   const childCommentId = req.body.childCommentId;
-  if (!audioBookId || !parentcommentId || !userId || !childCommentId) {
+  if (!audioId || !parentcommentId || !userId || !childCommentId) {
     res.status(404).json({
       message: "Please pass All Field",
     });
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
+        _id: audioId.trim(),
         "audioComments._id": parentcommentId.trim(),
         "audioComments.response._id": childCommentId,
       },
@@ -388,19 +427,19 @@ exports.likesAudioBookResponseComment = async (req, res) => {
     );
   }
 };
-exports.unlikesAudioBookResponseComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.unlikesAudioResponseComment = async (req, res) => {
+  const audioId = req.params.audioId;
   const userId = req.body.userID;
   const parentcommentId = req.body.parentcommentId;
   const childCommentId = req.body.childCommentId;
-  if (!audioBookId || !parentcommentId || !userId || !childCommentId) {
+  if (!audioId || !parentcommentId || !userId || !childCommentId) {
     res.status(404).json({
       message: "Please pass All Field",
     });
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
+        _id: audioId.trim(),
         "audioComments._id": parentcommentId.trim(),
         "audioComments.response._id": childCommentId,
       },
@@ -425,24 +464,24 @@ exports.unlikesAudioBookResponseComment = async (req, res) => {
   }
 };
 
-exports.likesEpsodeComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
+exports.likesEpisodeComment = async (req, res) => {
+  const audioId = req.params.audioId;
+  const episodeId = req.body.episodeId;
   const commentId = req.body.commentId;
   const userId = req.body.userID;
-  if (!audioBookId || !commentId || !userId || !epsodeId) {
+  if (!audioId || !commentId || !userId || !episodeId) {
     res.status(404).json({
       message: "Please pass all fileds Id",
     });
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId.trim(),
-        "audioEpsodes.epsodeComments._id": commentId.trim(),
+        _id: audioId.trim(),
+        "audioEpisode._id": epsodeId.trim(),
+        "audioEpisode.episodeComments._id": commentId.trim(),
       },
       {
-        $push: { "audioEpsodes.$[].epsodeComments.$[].likes": userId.trim() },
+        $push: { "audioEpisode.$[].episodeComments.$[].likes": userId.trim() },
       },
       (err, success) => {
         if (err) {
@@ -459,12 +498,13 @@ exports.likesEpsodeComment = async (req, res) => {
     );
   }
 };
-exports.unlikesEpsodeComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
+
+exports.unlikesEpisodeComment = async (req, res) => {
+  const audioId = req.params.audioId;
+  const episodeId = req.body.episodeId;
   const commentId = req.body.commentId;
   const userId = req.body.userID;
-  if (!audioBookId || !commentId || !userId || !epsodeId) {
+  if (!audioId || !commentId || !userId || !episodeId) {
     res.status(404).json({
       message: "Please pass all fileds Id",
     });
@@ -472,12 +512,14 @@ exports.unlikesEpsodeComment = async (req, res) => {
     AudioBook.findOneAndUpdate(
       {
         _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId.trim(),
-        "audioEpsodes.epsodeComments._id": commentId.trim(),
+        "audioEpisode._id": epsodeId.trim(),
+        "audioEpisode.episodeComments._id": commentId.trim(),
       },
       {
         $pull: {
-          "audioEpsodes.$[].epsodeComments.$[].likes": { $in: [userId.trim()] },
+          "audioEpisode.$[].episodeComments.$[].likes": {
+            $in: [userId.trim()],
+          },
         },
       },
       (err, success) => {
@@ -496,18 +538,18 @@ exports.unlikesEpsodeComment = async (req, res) => {
   }
 };
 
-exports.likesEpsodeResponseComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
+exports.likesEpisodeResponseComment = async (req, res) => {
+  const audioId = req.params.audioId;
+  const episodeId = req.body.episodeId;
   const userId = req.body.userID;
   const parentcommentId = req.body.parentcommentId;
   const childCommentId = req.body.childCommentId;
   if (
-    !audioBookId ||
+    !audioId ||
     !parentcommentId ||
     !userId ||
     !childCommentId ||
-    !epsodeId
+    !episodeId
   ) {
     res.status(404).json({
       message: "Please pass All Field",
@@ -516,13 +558,13 @@ exports.likesEpsodeResponseComment = async (req, res) => {
     AudioBook.findOneAndUpdate(
       {
         _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId.trim(),
-        "audioEpsodes.epsodeComments._id": parentcommentId.trim(),
-        "audioEpsodes.epsodeComments.response._id": childCommentId.trim(),
+        "audioEpisode._id": epsodeId.trim(),
+        "audioEpisode.episodeComments._id": parentcommentId.trim(),
+        "audioEpisode.episodeComments.response._id": childCommentId.trim(),
       },
       {
         $push: {
-          "audioEpsodes.$[].epsodeComments.$[].response.$[].likes": userId.trim(),
+          "audioEpisode.$[].episodeComments.$[].response.$[].likes": userId.trim(),
         },
       },
       (err, success) => {
@@ -540,27 +582,27 @@ exports.likesEpsodeResponseComment = async (req, res) => {
     );
   }
 };
-exports.unlikesEpsodeResponseComment = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
+exports.unlikesEpisodeResponseComment = async (req, res) => {
+  const audioBookId = req.params.audioId;
+  const episodeId = req.body.episodeId;
   const userId = req.body.userID;
   const parentcommentId = req.body.parentcommentId;
   const childCommentId = req.body.childCommentId;
-  if (!audioBookId || !parentcommentId || !userId || !childCommentId) {
+  if (!audioId || !parentcommentId || !userId || !childCommentId) {
     res.status(404).json({
       message: "Please pass All Field",
     });
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId.trim(),
-        "audioEpsodes.epsodeComments._id": parentcommentId.trim(),
-        "audioEpsodes.epsodeComments.response._id": childCommentId.trim(),
+        _id: audioId.trim(),
+        "audioEpisode._id": episodeId.trim(),
+        "audioEpisode.episodeComments._id": parentcommentId.trim(),
+        "audioEpisode.episodeComments.response._id": childCommentId.trim(),
       },
       {
         $pull: {
-          "audioEpsodes.$[].epsodeComments.$[].response.$[].likes": {
+          "audioEpisode.$[].episodeComments.$[].response.$[].likes": {
             $in: [userId.trim()],
           },
         },
@@ -586,13 +628,59 @@ exports.listofAudioBooks = async (req, res) => {
   const pagesize = +req.query.pagesize;
   const currentpage = +req.query.page;
 
-  const Count = await AudioBook.estimatedDocumentCount({}, (Err, count) => {
-    if (Err) {
-      console.log(Err);
+  const Count = await AudioBook.estimatedDocumentCount(
+    { ispodcast: false },
+    (Err, count) => {
+      if (Err) {
+        console.log(Err);
+      }
+      return count;
     }
-    return count;
-  });
-  const AudioBookQuery = AudioBook.find();
+  );
+  const AudioBookQuery = AudioBook.find({ ispodcast: false });
+
+  if (pagesize && currentpage) {
+    AudioBookQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
+  }
+  AudioBookQuery.find()
+    .populate("audiouploadedBy", "username email", users)
+    .then((data) => {
+      if (data.length <= 0) {
+        res.status(404).json({
+          message: "No AudioBook Available",
+          data: data,
+        });
+      } else {
+        res.status(200).json({
+          message: "AudioBook fetched successfully",
+          data: data,
+          totallength: Count,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).json({
+        message: "error while fetching data",
+        data: err,
+      });
+    });
+};
+
+exports.listofpodcast = async (req, res) => {
+  const pagesize = +req.query.pagesize;
+  const currentpage = +req.query.page;
+
+  const Count = await AudioBook.estimatedDocumentCount(
+    { ispodcast: true },
+    (Err, count) => {
+      if (Err) {
+        console.log(Err);
+      }
+      return count;
+    }
+  );
+  const AudioBookQuery = AudioBook.find({ ispodcast: true });
 
   if (pagesize && currentpage) {
     AudioBookQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
@@ -623,12 +711,11 @@ exports.listofAudioBooks = async (req, res) => {
 };
 
 exports.verifiyAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  console.log("verify" + req.body.verify);
+  const audioId = req.params.audioId;
   const verify = !req.body.verify;
   AudioBook.findOneAndUpdate(
     {
-      _id: audioBookId.trim(),
+      _id: audioId.trim(),
     },
     { $set: { audioverify: verify } },
     (err, success) => {
@@ -645,12 +732,12 @@ exports.verifiyAudioBook = async (req, res) => {
     }
   );
 };
-exports.BlockunBlockAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.BlockunBlockAudio = async (req, res) => {
+  const audioId = req.params.audioId;
   const block = !req.body.block;
   AudioBook.findOneAndUpdate(
     {
-      _id: audioBookId.trim(),
+      _id: audioId.trim(),
     },
     { $set: { audioblock: block } },
     (err, success) => {
@@ -668,14 +755,14 @@ exports.BlockunBlockAudioBook = async (req, res) => {
   );
 };
 
-exports.deleteAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  if (!audioBookId) {
+exports.deleteAudio = async (req, res) => {
+  const audioId = req.params.audioId;
+  if (!audioId) {
     res.status(404).json({
       message: "AudioBook not found",
     });
   } else {
-    AudioBook.findOneAndDelete({ _id: audioBookId.trim() }, (err, data) => {
+    AudioBook.findOneAndDelete({ _id: audioId.trim() }, (err, data) => {
       if (err) {
         console.log("er", err);
         res.status(204).json({
@@ -689,30 +776,30 @@ exports.deleteAudioBook = async (req, res) => {
     });
   }
 };
-exports.deleteEpsode = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
-  if (!audioBookId || !epsodeId) {
+exports.deleteEpisode = async (req, res) => {
+  const audioId = req.params.audioBookId;
+  const episodeId = req.body.episodeId;
+  if (!audioId || !episodeId) {
     res.status(404).json({
       message: "invalid params",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim(), "audioEpsodes._id": epsodeId.trim() },
+      { _id: audioId.trim(), "audioEpsodes._id": episodeId.trim() },
       {
         $pull: {
-          "audioEpsodes.$[]._id": { $in: [epsodeId.trim()] },
+          "audioEpisodes.$[]._id": { $in: [episodeId.trim()] },
         },
       },
       (err, data) => {
         if (err) {
           console.log("er", err);
           res.status(204).json({
-            message: "Epsode deletion failed",
+            message: "Episode deletion failed",
           });
         } else {
           res.status(200).json({
-            message: "Epsode deleted Successfully",
+            message: "Episode deleted Successfully",
           });
         }
       }
@@ -720,14 +807,14 @@ exports.deleteEpsode = async (req, res) => {
   }
 };
 
-exports.editAudioBook = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
+exports.editAudio = async (req, res) => {
+  const audioId = req.params.audioId;
   const audioTag = req.body.audioTag;
   const audioTitle = req.body.audioTitle;
   const audioDescription = req.body.audioDescription;
   const audioImage = req.body.audioImage;
   if (
-    !audioBookId ||
+    !audioId ||
     !audioTag ||
     !audioTitle ||
     !audioDescription ||
@@ -739,7 +826,7 @@ exports.editAudioBook = async (req, res) => {
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
+        _id: audioId.trim(),
       },
       {
         $set: {
@@ -764,20 +851,20 @@ exports.editAudioBook = async (req, res) => {
     );
   }
 };
-exports.editEpsode = async (req, res) => {
-  const audioBookId = req.params.audioBookId;
-  const epsodeId = req.body.epsodeId;
+exports.editEpisode = async (req, res) => {
+  const audioId = req.params.audioId;
+  const episodeId = req.body.episodeId;
   const title = req.body.title;
   const description = req.body.description;
   const streamUrl = req.body.streamUrl;
-  const epsodeImage = req.body.epsodeImage;
+  const episodeImage = req.body.episodeImage;
   if (
-    !audioBookId ||
-    !epsodeId ||
+    !audioId ||
+    !episodeId ||
     !title ||
     !description ||
     !streamUrl ||
-    !epsodeImage
+    !episodeImage
   ) {
     res.status(404).json({
       message: "invalid params",
@@ -785,8 +872,8 @@ exports.editEpsode = async (req, res) => {
   } else {
     AudioBook.findOneAndUpdate(
       {
-        _id: audioBookId.trim(),
-        "audioEpsodes._id": epsodeId,
+        _id: audioId.trim(),
+        "audioEpisode._id": episodeId,
       },
       {
         $set: {
@@ -794,18 +881,18 @@ exports.editEpsode = async (req, res) => {
           audioTitle: audioTitle,
           description: description,
           streamUrl: streamUrl,
-          epsodeImage: epsodeImage,
+          episodeImage: episodeImage,
         },
       },
       (err, success) => {
         if (err) {
           console.log("AudioBook", err);
           res.status(204).json({
-            message: "Epsode not updated",
+            message: "Episode not updated",
           });
         } else {
           res.status(200).json({
-            message: "epsode Updated",
+            message: "episode Updated",
           });
         }
       }
@@ -814,16 +901,16 @@ exports.editEpsode = async (req, res) => {
 };
 
 exports.adduserlikes = (req, res) => {
-  const audioBookId = req.params.audioBookId;
+  const audioId = req.params.audioId;
   const userId = req.body.userID;
-  console.log(req.body);
-  if (!audioBookId || !userId) {
+
+  if (!audioId || !userId) {
     res.status(404).json({
       message: "invalid params",
     });
   } else {
     AudioBook.findOneAndUpdate(
-      { _id: audioBookId.trim() },
+      { _id: audioId.trim() },
       { $inc: { likes: 1 } },
       (err, success) => {
         if (err) {

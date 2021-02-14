@@ -29,6 +29,7 @@ exports.getUserComments = async (req, res) => {
   const pagesize = +req.query.pagesize;
   const currentpage = +req.query.page;
 
+  console.log(userId);
   const TotalLenght = await audioBook.countDocuments(
     {
       $or: [

@@ -47,6 +47,7 @@ const options = {
     "./routes/likecomment.js",
     "./routes/featureArea.js",
     "./routes/playlist.js",
+    "./routes/audiobooks.js",
   ],
 };
 
@@ -106,7 +107,7 @@ app.use("/payments", paymentroute);
 app.use("/likecomment", likecomment);
 app.use("/featureArea", featureArea);
 app.use("/playlist", playlist);
-app.use("/audiobooks", audiobookroute);
+app.use("/audiolist", audiobookroute);
 app.use("/", (req, res) => {
   res.json("WELCOME TO SERVER");
 });
