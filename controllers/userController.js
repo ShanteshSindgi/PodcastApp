@@ -3,9 +3,11 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 var nodemailer = require("nodemailer");
+const path = require('path');
 
 const dotenv = require("dotenv");
 dotenv.config();
+let passwordtoken;
 exports.loginUser = async (req, res) => {
   const userInput = await new User({
     email: req.body.email,
@@ -16,7 +18,7 @@ exports.loginUser = async (req, res) => {
     email: userInput.email,
   });
   if (!userData) {
-    return res.status(400).json({
+    return res.status(404).json({
       msg: "Account not found",
     });
   }
@@ -25,22 +27,21 @@ exports.loginUser = async (req, res) => {
   // console.log(userInput.password, userData.password, isMatch);
 
   if (!isMatch) {
-    return res.status(400).json({
+    return res.status(401).json({
       msg: "Invalid Credentials",
     });
   }
 
-  const token = await jwt.sign(
-    {
+  const token = await jwt.sign({
       userid: userData._id,
       username: userData.username,
       email: userData.email,
     },
 
-    process.env.JWT_KEY,
-    {
-      expiresIn: "1h",
-    }
+    process.env.JWT_KEY
+    // {
+    //   expiresIn: "1h",
+    // }
   );
 
   res.status(200).json({
@@ -49,17 +50,15 @@ exports.loginUser = async (req, res) => {
   });
 };
 
-exports.signUpUser = (req, res, next) => {
-  console.log("SAd", req.body);
-
+exports.signUpUser = async (req, res, next) => {
   User.findOne({
-    email: req.body.email,
+    email: await  req.body.email,
   }).then((user) => {
     if (user) {
       res.status(409).json("User Already Exists");
       next();
     } else {
-      const newUser = new User({
+      const newUser =  new User({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
@@ -72,10 +71,29 @@ exports.signUpUser = (req, res, next) => {
 
           newUser
             .save()
-            .then(() => res.status(200).json("User Registered Successfully"))
-            .catch((err) => {
-              console.log(err);
-            });
+            .then(
+              (data) => {
+                // console.log("d", data);
+                const token =  jwt.sign({
+                    userid: data._id,
+                    username: data.username,
+                    email: data.email,
+                  },
+
+                  process.env.JWT_KEY
+                  // {
+                  //   expiresIn: "1h",
+                  // }
+                );
+                res.status(200).json({
+                  "message": "User Registered Successfully",
+                  "token":token
+                });
+              })
+            .catch(
+              (err) => {
+                console.log(err);
+              });
         });
       });
     }
@@ -86,16 +104,24 @@ exports.forgetPassword = async (req, res) => {
   console.log("dta", req.body);
   const email = req.body.email;
   if (!email) {
-    res.json("Email Not Found");
-  } else {
-    const token = await jwt.sign(
-      {
+    res.status(404).json("Email Not Found");
+  } 
+  const userData = await User.findOne({
+    email: email,
+  });
+  
+   if (!userData) {
+    return res.status(404).json({
+      msg: "Account not found",
+    });
+  }
+  else {
+    const token = await jwt.sign({
         email: email,
       },
 
-      process.env.JWT_KEY,
-      {
-        // expiresIn: "1h",
+      process.env.JWT_KEY, {
+        expiresIn: "1h",
       }
     );
     var transporter = nodemailer.createTransport({
@@ -110,8 +136,7 @@ exports.forgetPassword = async (req, res) => {
       from: "bookmymovie30@gmail.com",
       to: email,
       subject: "Password Reset",
-      text:
-        "Go to this Link http://localhost:3200/users/passwordreset/?token=" +
+      text: "Go to this Link http://localhost:3200/users/passwordreset/?token=" +
         token,
     };
 
@@ -131,9 +156,8 @@ exports.forgetPassword = async (req, res) => {
 exports.passwordReset = (req, res) => {
   console.log(req.body);
   console.log(req.query.token);
-  const tokens = req.query.token;
-  console.log("token", tokens);
-  jwt.verify(tokens, process.env.JWT_KEY, (err) => {
+   passwordtoken = req.query.token;
+  jwt.verify(passwordtoken, process.env.JWT_KEY, (err) => {
     console.log(process.env.JWT_KEY);
     if (err) {
       console.log(err);
@@ -141,13 +165,57 @@ exports.passwordReset = (req, res) => {
         message: "Token expire",
       });
     } else {
-      res.send("<h1>Password Reset <h1> <input ");
+      res.sendFile(path.join(__dirname+'/forgetPassword.html'));
+      
     }
   });
 };
 exports.passwordresetSuccessfull = (req, res) => {
   console.log(req.query.password);
-  res.json("success");
+  const password=req.query.password;
+  if(!passwordtoken || !password)
+  {
+    res.json(500).json("Something went wrong")
+  }
+  else{
+    
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(password, salt, (err, hash) => {
+        if (err) throw err;
+        jwt.verify(passwordtoken, process.env.JWT_KEY, (err, verifiedJwt) => {
+          if(err){
+            console.log(err);
+            res.json(err.message)
+      
+          }else{
+            console.log(verifiedJwt.email)
+            User.findOneAndUpdate({
+              email: verifiedJwt.email,
+            }, {
+              password: hash,
+            },
+            (err, result) => {
+              if (err) {
+                res.status(204).json({
+                  message: " Password Not Updated",
+                });
+                console.log(err);
+              } else {
+                res.status(200).json({
+                  message: "Password Updated Successfully,You can login now",
+                });
+              }
+            }
+          );
+          }
+        })
+      });
+    });
+
+
+
+
+  }
 };
 
 exports.fetchUsers = async (req, res) => {
@@ -179,19 +247,19 @@ exports.updateUser = async (req, res) => {
   const userid = await req.params.userid;
   const username = await req.body.username;
   const email = await req.body.email;
+  const role = await req.body.role
 
-  if (!userid || !username || !email) {
+  if (!userid || !username || !email || !role) {
     res.status(404).json({
       message: "invalid Params",
     });
   } else {
-    User.findByIdAndUpdate(
-      {
+    User.findByIdAndUpdate({
         _id: userid,
-      },
-      {
+      }, {
         email: email,
         username: username,
+        role: role
       },
       (err, result) => {
         if (err) {
@@ -218,8 +286,7 @@ exports.deleteUser = (req, res) => {
     });
   } else {
     console.log("user", userid);
-    User.deleteOne(
-      {
+    User.deleteOne({
         _id: userid,
       },
       (err, data) => {
@@ -248,11 +315,9 @@ exports.userStatus = (req, res) => {
       message: "User not found",
     });
   } else {
-    User.findByIdAndUpdate(
-      {
+    User.findByIdAndUpdate({
         _id: userid,
-      },
-      {
+      }, {
         status: !status,
       },
       (err, result) => {

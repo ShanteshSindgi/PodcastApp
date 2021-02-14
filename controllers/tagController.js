@@ -36,8 +36,7 @@ exports.addTag = async (req, res) => {
           });
         }
       });
-  }
-};
+  };
 
 exports.fetchtags = async (req, res) => {
   const pagesize = +req.query.pagesize;
