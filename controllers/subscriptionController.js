@@ -9,12 +9,7 @@ exports.addSubscription = async (req, res) => {
   const subscriptionFeatures = req.body.subscriptionFeatures;
   const subscriptionDuration = req.body.subscriptionDuration;
 
-  if (
-    !subscriptionName ||
-    !subscriptionPrice ||
-    !subscriptionFeatures ||
-    !subscriptionDuration
-  ) {
+  if (!subscriptionName || !subscriptionPrice || !subscriptionFeatures || !subscriptionDuration) {
     res.status(404).json({
       message: "Please Enter All Subscription Fields",
     });
@@ -78,6 +73,7 @@ exports.fetchSubscriptions = async (req, res) => {
 
 //Update Subscription
 exports.updateSubscription = async (req, res) => {
+  console.log("HIII")
   const subscriptionid = await req.params.subscriptionid;
   const subscriptionName = await req.body.subscriptionName;
   const subscriptionPrice = await req.body.subscriptionPrice;
@@ -94,12 +90,11 @@ exports.updateSubscription = async (req, res) => {
     res.status(404).json({
       message: "Subscription Not Found",
     });
-  } else {
-    Subscriptions.findByIdAndUpdate(
-      {
+  } 
+  else {
+    Subscriptions.findByIdAndUpdate({
         _id: subscriptionid,
-      },
-      {
+      }, {
         subscriptionName: subscriptionName,
         subscriptionPrice: subscriptionPrice,
         subscriptionFeatures: subscriptionFeatures,
@@ -130,8 +125,7 @@ exports.deleteSubscription = (req, res) => {
       message: "Subscription not found",
     });
   } else {
-    Subscriptions.deleteOne(
-      {
+    Subscriptions.deleteOne({
         _id: subscriptionid,
       },
       (err, data) => {
@@ -165,11 +159,9 @@ exports.buySubscription = (req, res) => {
     Subscriptions.findById(subscriptionid).then(
       (resd) => {
         if (resd) {
-          User.findOneAndUpdate(
-            {
+          User.findOneAndUpdate({
               _id: userid,
-            },
-            {
+            }, {
               $push: {
                 subscriptionTaken: {
                   subscriptionid: subscriptionid,
