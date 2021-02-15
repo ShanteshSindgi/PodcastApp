@@ -136,7 +136,7 @@ exports.forgetPassword = async (req, res) => {
       from: "bookmymovie30@gmail.com",
       to: email,
       subject: "Password Reset",
-      text: "Go to this Link http://localhost:3200/users/passwordreset/?token=" +
+      text: `Go to this Link ${process.env.API_URL}/users/passwordreset/?token=` +
         token,
     };
 
