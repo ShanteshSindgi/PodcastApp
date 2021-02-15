@@ -144,7 +144,7 @@ exports.forgetPassword = async (req, res) => {
     console.log("mail",mailOptions);
     transporter.sendMail(mailOptions, async function (error, info) {
       if (error) {
-        console.log(error);
+        console.log("yo",error);
         res.status(204).json({
           "message":"something went wrong",
           "error":error
