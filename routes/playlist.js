@@ -4,7 +4,7 @@ const playlistController = require("../controllers/playlistController");
 
 /**
  * @swagger
- * /playlist/getuserplaylist:
+ * /playlist/getuserplaylist/{userId}:
  *    get:
  *      tags:
  *        - playlist
@@ -13,7 +13,7 @@ const playlistController = require("../controllers/playlistController");
  *      consumes:
  *        - application/json
  *      parameters:
- *        - in: query
+ *        - in: path
  *          name: userId
  *          type: string
  *          description: user uuid
@@ -34,7 +34,7 @@ const playlistController = require("../controllers/playlistController");
  *          description : not found
  */
 
-router.get("/getuserplaylist", playlistController.getuserplaylist);
+router.get("/getuserplaylist/:userId", playlistController.getuserplaylist);
 
 /**
  * @swagger

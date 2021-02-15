@@ -27,7 +27,7 @@ exports.getuserplaylist = async (req, res) => {
         } else {
           const resultData = data.playLists.map((playlist) => {
             playlist.playlistSongs = playlist.playlistSongs.map((audio) => {
-              audio.audioId.audioEpsodes = audio.audioId.audioEpsodes.filter(
+              audio.audioId.audioEpsodes = audio.audioId.audioEpisode.filter(
                 (episode) => {
                   console.log(String(episode._id), String(audio.episodeId));
                   return String(episode._id) === String(audio.episodeId);
