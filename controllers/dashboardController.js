@@ -18,10 +18,12 @@ exports.getDashboard = async (req, res) => {
         PodcastCount: counts[2],
       });
     })
-    .then((err) => {
+    .catch((err) => {
       console.log("err", err);
       res.status(204).json({
         message: "error",
       });
-    });
+    })
+    
+    
 };

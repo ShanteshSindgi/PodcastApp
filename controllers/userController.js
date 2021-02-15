@@ -222,6 +222,12 @@ exports.fetchUsers = async (req, res) => {
   console.log(req.query);
   const pagesize = +req.query.pagesize;
   const currentpage = +req.query.page;
+  const Count = await User.estimatedDocumentCount({}, (Err, count) => {
+    if (Err) {
+      console.log(Err);
+    }
+    return count;
+  });
   const UserQuery = User.find();
   if (pagesize && currentpage) {
     UserQuery.skip(pagesize * (currentpage - 1)).limit(pagesize);
@@ -231,6 +237,7 @@ exports.fetchUsers = async (req, res) => {
       res.status(200).json({
         message: "Users  data received successfully",
         userList: data,
+        totallength:Count
       });
     })
     .catch((err) => {
