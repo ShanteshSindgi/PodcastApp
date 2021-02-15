@@ -102,6 +102,7 @@ exports.signUpUser = async (req, res, next) => {
 
 exports.forgetPassword = async (req, res) => {
   console.log("dta", req.body);
+
   const email = req.body.email;
   if (!email) {
     res.status(404).json("Email Not Found");
@@ -139,10 +140,16 @@ exports.forgetPassword = async (req, res) => {
       text: `Go to this Link ${process.env.API_URL}/users/passwordreset/?token=` +
         token,
     };
-
+    console.log("api",process.env.API_URL);
+    console.log("mail",mailOptions);
     transporter.sendMail(mailOptions, async function (error, info) {
       if (error) {
         console.log(error);
+        res.status(204).json({
+          "message":"something went wrong",
+          "error":error
+
+        })
       } else {
         console.log("Email sent: " + info.response);
         res.status(200).json({
