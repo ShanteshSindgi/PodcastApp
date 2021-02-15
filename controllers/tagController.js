@@ -1,5 +1,5 @@
-const tags = require("./../models/tagsModel");
-const { count } = require("./../models/tagsModel");
+const tags = require("./../models/TagsModel");
+// const { count } = require("./../models/TagsModel");
 
 exports.addTag = async (req, res) => {
   const tagName = req.body.tagName;
